@@ -4,7 +4,7 @@
 </form>
 
 <script>
-fetch('tasks/preview/0/0')
+fetch('http://iir1yoab43zi73g3y5turv6au31dpo.simpletasks.web.jctf.pro/tasks/preview/0/0')
   .then(r => r.text())
   .then(data => {
     document.getElementById('raw').value = data;
