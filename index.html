@@ -4,7 +4,7 @@
 </form>
 
 <script>
-fetch('http://localhost:3000/tasks/preview/0/0')
+fetch('tasks/preview/0/0')
   .then(r => r.text())
   .then(data => {
     document.getElementById('raw').value = data;
